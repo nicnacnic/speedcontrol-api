@@ -22,29 +22,29 @@ module.exports = (nodecg) => {
 
     // Timer
     router.post('/timer/start', (req, res) => {
-        if (timer.value.status !== 'stopped' && timer.value.status !== 'paused') return res.status(400).send({ error: 'Timer is running.' })
+        if (timer.value.state !== 'stopped' && timer.value.state !== 'paused') return res.status(400).send({ error: 'Timer is running.' })
         nodecg.sendMessageToBundle('timerStart', 'nodecg-speedcontrol');
         res.status(200).send({})
     });
     router.post('/timer/stop', (req, res) => {
-        if (timer.value.status !== 'running') return res.status(400).send({ error: 'Timer is not running.' })
+        if (timer.value.state !== 'running') return res.status(400).send({ error: 'Timer is not running.' })
         if (req.body === '' || Object.keys(req.body).length <= 0) nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: 'undefined' });
         else nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: `${req.body.id}`, forfeit: req.body.forfeit });
         res.status(200).send({})
     });
     router.post('/timer/pause', (req, res) => {
-        if (timer.value.status !== 'running') return res.status(400).send({ error: 'Timer is running.' })
+        if (timer.value.state !== 'running') return res.status(400).send({ error: 'Timer is running.' })
         nodecg.sendMessageToBundle('timerPause', 'nodecg-speedcontrol');
         res.status(200).send({})
     });
     router.post('/timer/undo', (req, res) => {
-        if (timer.value.status !== 'finished' && timer.value.status !== 'running') return res.status(400).send({ error: 'Timer is not running.' })
+        if (timer.value.state !== 'finished' && timer.value.state !== 'running') return res.status(400).send({ error: 'Timer is not running.' })
         else if (req.body === '' || Object.keys(req.body).length <= 0) nodecg.sendMessageToBundle('timerUndo', 'nodecg-speedcontrol', 'undefined');
         nodecg.sendMessageToBundle('timerUndo', 'nodecg-speedcontrol', req.body.id);
         res.status(200).send({})
     })
     router.post('/timer/reset', (req, res) => {
-        if (timer.value.status === 'stopped') return res.status(400).send({ error: 'Timer is stopped.' })
+        if (timer.value.state === 'stopped') return res.status(400).send({ error: 'Timer is stopped.' })
         nodecg.sendMessageToBundle('timerReset', 'nodecg-speedcontrol', false);
         res.status(200).send({})
     });

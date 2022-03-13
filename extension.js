@@ -15,7 +15,7 @@ module.exports = (nodecg) => {
         if (req.path === '/timer/event') return next();
         switch (req.headers.authorization.split(' ')[1]) {
             case undefined: res.status(401).send({ error: 'No token provided.' }); break;
-            case nodecg.bundleConfig.token: next(); break;
+            case nodecg.bundleConfig.token: nodecg.log.debug(`Endpoint: ${req.path}     Body: ${req.body}`); next(); break;
             default: res.status(403).send({ error: 'Invalid token.' }); break;
         }
     });
@@ -29,7 +29,11 @@ module.exports = (nodecg) => {
     router.post('/timer/stop', (req, res) => {
         if (timer.value.state !== 'running') return res.status(400).send({ error: 'Timer is not running.' })
         if (req.body === '' || Object.keys(req.body).length <= 0) nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: 'undefined' });
-        else nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: `${req.body.id}`, forfeit: req.body.forfeit });
+        else if (req.body.id !== undefined) nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: `${req.body.id}`, forfeit: req.body.forfeit });
+        else if (req.body.player !== undefined) {
+            if (!(req.body.player >= 1 && req.body.player <= 4)) return res.status(400).send({ error: 'Invalid player.' })
+            else nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: `${runDataActiveRun.value.teams[req.body.player - 1].id}`, forfeit: req.body.forfeit });
+        }
         res.status(200).send({})
     });
     router.post('/timer/pause', (req, res) => {

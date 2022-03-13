@@ -1,6 +1,6 @@
 {
     "name": "speedcontrol-api",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "REST API integration with nodecg-speedcontrol.",
     "homepage": "https://github.com/nicnacnic/speedcontrol-api",
     "license": "MIT",

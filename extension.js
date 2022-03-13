@@ -28,7 +28,12 @@ module.exports = (nodecg) => {
     });
     router.post('/timer/stop', (req, res) => {
         if (timer.value.state !== 'running') return res.status(400).send({ error: 'Timer is not running.' })
-        if (req.body === '' || Object.keys(req.body).length <= 0) nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: 'undefined' });
+        if (req.body === '' || Object.keys(req.body).length <= 0) {
+            for (let i = 0; i < runDataActiveRun.value.teams.length; i++) {
+                nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: runDataActiveRun.value.teams[i].id, forfeit: req.body.forfeit });
+            }
+        }
+        else if (req.body.id !== undefined && req.body.player !== undefined) return res.status(400).send({ error: 'Invalid parameters.' })
         else if (req.body.id !== undefined) nodecg.sendMessageToBundle('timerStop', 'nodecg-speedcontrol', { id: `${req.body.id}`, forfeit: req.body.forfeit });
         else if (req.body.player !== undefined) {
             if (!(req.body.player >= 1 && req.body.player <= 4)) return res.status(400).send({ error: 'Invalid player.' })

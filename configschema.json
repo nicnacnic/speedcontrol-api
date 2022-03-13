@@ -2,16 +2,19 @@
     "$id": "http://example.com/example.json",
     "$schema": "http://json-schema.org/draft-07/schema",
     "default": {
-        "token": ""
+        "token": "",
+        "debugLogging": false
     },
     "description": "The root schema comprises the entire JSON document.",
     "examples": [
         {
-            "token": ""
+            "token": "",
+            "debugLogging": false
         }
     ],
     "required": [
-        "token"
+        "token",
+        "debugLogging"
     ],
     "title": "The root schema",
     "type": "object",
@@ -24,6 +27,16 @@
             "default": "",
             "examples": [
                 ""
+            ]
+        },
+        "debugLogging": {
+            "$id": "#/properties/debugLogging",
+            "type": "boolean",
+            "title": "The debugLogging schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": false,
+            "examples": [
+                false
             ]
         }
     },

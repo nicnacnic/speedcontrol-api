@@ -98,9 +98,10 @@ Undos a stop/finished timer. Timer must be finished or running.
 `POST`
 
 * **Parameters**  
+  * `player`[`number`] *(optional)* Player number to undo timer of; must be between 1 and 4.
   * `id`[`string`] *(optional)* Team ID to undo timer of; must be defined if run is active and has teams.  
   
-  If no parameters are set, the timer is undoed for all players.
+  `player` and `id` are mutually exclusive; if one parameter is specified the other parameter can't be used. If no parameters are set, the timer will be undoed for all players.
   
 **Timer Reset**
 ----

@@ -13,11 +13,10 @@ module.exports = (nodecg) => {
 
     router.use((req, res, next) => {
         if (req.path === '/timer/event') return next();
-        switch (req.headers.authorization.split(' ')[1]) {
-            case undefined: res.status(401).send({ error: 'No token provided.' }); break;
-            case nodecg.bundleConfig.token: nodecg.log.debug(`Endpoint: ${req.path}     Body: ${req.body}`); next(); break;
-            default: res.status(403).send({ error: 'Invalid token.' }); break;
-        }
+        else if (req.headers.authorization === undefined) return res.status(401).send({ error: 'No token provided.' })
+        if (req.headers.authorization.split(' ')[1] !== nodecg.bundleConfig.token) return res.status(403).send({ error: 'Invalid token.' });
+        if (nodecg.bundleConfig.debugLogging) nodecg.log.info(`Endpoint: ${req.path}     Body: ${JSON.stringify(req.body)}`);
+        next();
     });
 
     // Timer
@@ -48,8 +47,17 @@ module.exports = (nodecg) => {
     });
     router.post('/timer/undo', (req, res) => {
         if (timer.value.state !== 'finished' && timer.value.state !== 'running') return res.status(400).send({ error: 'Timer is not running.' })
-        else if (req.body === '' || Object.keys(req.body).length <= 0) nodecg.sendMessageToBundle('timerUndo', 'nodecg-speedcontrol', 'undefined');
-        nodecg.sendMessageToBundle('timerUndo', 'nodecg-speedcontrol', req.body.id);
+        if (req.body === '' || Object.keys(req.body).length <= 0) {
+            for (let i = 0; i < runDataActiveRun.value.teams.length; i++) {
+                nodecg.sendMessageToBundle('timerUndo', 'nodecg-speedcontrol', runDataActiveRun.value.teams[i].id);
+            }
+        }
+        else if (req.body.id !== undefined && req.body.player !== undefined) return res.status(400).send({ error: 'Invalid parameters.' })
+        else if (req.body.id !== undefined) nodecg.sendMessageToBundle('timerUndo', 'nodecg-speedcontrol', req.body.id);
+        else if (req.body.player !== undefined) {
+            if (!(req.body.player >= 1 && req.body.player <= 4)) return res.status(400).send({ error: 'Invalid player.' })
+            else nodecg.sendMessageToBundle('timerUndo', 'nodecg-speedcontrol', runDataActiveRun.value.teams[req.body.player - 1].id);
+        }
         res.status(200).send({})
     })
     router.post('/timer/reset', (req, res) => {

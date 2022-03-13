@@ -68,10 +68,11 @@ Stops/finishes the timer. Timer must be running.
 `POST`
 
 * **Parameters**  
+  * `player`[`number`] *(optional)* Player number to stop timer of; must be between 1 and 4.
   * `id`[`string`] *(optional)* Team ID to stop timer of; must be defined if run is active and has teams.  
   * `forfeit`[`boolean`] *(optional)* if true, the finish time will be recorded as `"forfeit"` instead of `"completed"`.
   
-  If no parameters are set, the timer is stopped for all players.
+  `player` and `id` are mutually exclusive; if one parameter is specified the other parameter can't be used. If no parameters are set, the timer will be stopped for all players.
   
 **Timer Pause**
 ----
